@@ -46,13 +46,21 @@ return[+ OR -]
 pos = int(sam_line[3])
 cig_string = sam_line[5]
 
-for char in cig_string:
-    if letter = 's'
-        pos = pos + int(clip_num)
-    if letter = 'm' 
-        pos = pos 
-    else: 
-        clip_num.append(char)
+if + strand: 
+    for char in cig_string:
+        if letter = 's'
+            pos = pos + int(clip_num)
+        if letter = 'm' 
+            pos = pos 
+        else: 
+            clip_num.append(char)
+
+if - strand: 
+    #in the negative strand you have to add 
+    Soft clipping (both sides): S
+    Deletion : D
+    match : M 
+    Position number 
 
 return(pos)
 ```
@@ -109,3 +117,22 @@ with open(sam_file, "r") as in_file,
                 pass 
 
 ```
+
+## Test Files: 
+Cases to keep: 
+1. Biological Duplicates: same chrom #, position #, strandedness, DIFFERENT UMI 
+2. Not real duplicates: everything the same but position is different after adjusting for soft clipping 
+3. everything the same except for: chromosome #, OR position #, OR strand OR UMI 
+
+Cases to remove:
+1. PCR duplicates: all identical same chrom #, position #, strandedness, same UMI
+2. different starting position before adjusting pos based on soft clipping, same after adjusting 
+3. incorrect UMI 
+
+LINE 25: initial read KEEP  
+LINE 26: identical Biological dup KEEP\
+LINE 27:duplicate after soft clipping REMOVE\
+LINE 28:looks like dup but isn't after soft clipping KEEP\
+LINE 29:looks like duplicate but not on same strand KEEP\
+LINE 30: looks like duplicate but not on same chrom KEEP\
+LINE 32: unknown UMI REMOVE
