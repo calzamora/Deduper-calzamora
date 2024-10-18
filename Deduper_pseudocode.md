@@ -3,8 +3,8 @@
 ## Functions: 
 
 ### arg_parse(-u --umi_list, -f --sam_file, -o --out_file, -h --help)
-```
-this function will take in:
+```python
+```this function will take in:```
 
 -f sorted sam file
 -o output deduplicated sam file 
@@ -13,7 +13,7 @@ this function will take in:
 ```
 
 ### get_line_info(sam_line):
-```
+```python
 ```this function will take in a sam file line and return an array containing: [Position adjusted for soft clipping, strandedness, UMI]```
 
 chromosome # : index position in line 
@@ -29,7 +29,7 @@ return[position #, strand, UMI]
 ```
 
 ### check_strand(sam_line):
-```
+```python
 ```This function will take in the sam line and parse the bit flag at bit 16 to return the strandedness```
 if bflag & 16 == 16:
     rev_comp = True
@@ -40,7 +40,7 @@ return[+ OR -]
 ```
 
 ### de_softclip(sam_line):
-```
+```python
 ```This function will take in the sam line and return the position adjusted for soft clipping```
 #initial position not adjusted for soft clipping: 
 pos = int(sam_line[3])
@@ -57,16 +57,17 @@ if + strand:
 
 if - strand: 
     #in the negative strand you have to add 
-    Soft clipping (both sides): S
+    Soft clipping (right side of M): S
     Deletion : D
     match : M 
     Position number 
-
+    to get 5' most start site 
+    -1 (to account for 1 based)
 return(pos)
 ```
 
 ## Flow:
-```
+```python
 #initialize duplicate set that will hold the position, strandedness, and UMI 
 dup_set = {}
 
