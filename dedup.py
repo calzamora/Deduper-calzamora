@@ -93,6 +93,7 @@ def get_line_info(sam_line: str) -> tuple:
     UMI = UMI[7]
     chrom = spline[2]
     line_info = (chrom, start_pos, strand, UMI)
+    return(line_info)
 
 #create set of UMIS: 
 umi_set = set()
@@ -113,14 +114,24 @@ with (open(in_file, "r") as in_file,
         if sam_line == "":
             break 
         spline = sam_line.split()
-        umi = spline[0].split(":")
-        umi = umi[7]
 
         #write out all the header lines: 
-        if spline[0] == "@":
-            out_file.write(sam_line)
-        elif spline[0] != "@":
+        if len(spline[0]) == 3:
+            out_file.write(f"{sam_line}\n")
+        elif len(spline[0]) != 3:
             #check if UMI is known: 
+            umi = spline[0].split(":")
+            # print(umi)
+
+        # if spline[0] == r'(@\D+)':
+        #     out_file.write(sam_line)
+        # elif spline[0] != r'(@\D+)':
+        #     #check if UMI is known: 
+        #     print(spline)
+        #     umi = spline[0].split(":")
+        #     print(umi)
+
+            umi = umi[7]
             if umi not in umi_set:
                 continue
             elif umi in umi_set:
@@ -128,7 +139,10 @@ with (open(in_file, "r") as in_file,
                 chrom = line_info[0]
             
             #when i hit a new chromosome, wipe the set and reset chr_num variable to current chrom:
-            if chrom != chr_num:
+            if int(chrom) != chr_num:
+                print(sam_line)
+                print(chrom)
+                print(chr_num)
                 dup_set = set()
                 chr_num = chrom 
             
@@ -136,7 +150,7 @@ with (open(in_file, "r") as in_file,
             elif chrom == chr_num:
                 if line_info not in unique_set:
                     unique_set.add(line_info)
-                    out_file.write(sam_line)
+                    out_file.write(f"{sam_line}\n")
                 elif line_info in unique_set:
                     pass
 
