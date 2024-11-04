@@ -90,7 +90,7 @@ def get_line_info(sam_line: str) -> tuple:
     strand = reverse_strand(sam_line)
     spline = sam_line.split()
     UMI = spline[0].split(":")
-    UMI = UMI[7]
+    UMI = UMI[-1]
     chrom = spline[2]
     line_info = (chrom, start_pos, strand, UMI)
     return(line_info)
@@ -117,21 +117,14 @@ with (open(in_file, "r") as in_file,
 
         #write out all the header lines: 
         if len(spline[0]) == 3:
+            # print(spline[0])
             out_file.write(f"{sam_line}\n")
         elif len(spline[0]) != 3:
             #check if UMI is known: 
+            # print(spline[0])
             umi = spline[0].split(":")
+            umi = umi[-1]
             # print(umi)
-
-        # if spline[0] == r'(@\D+)':
-        #     out_file.write(sam_line)
-        # elif spline[0] != r'(@\D+)':
-        #     #check if UMI is known: 
-        #     print(spline)
-        #     umi = spline[0].split(":")
-        #     print(umi)
-
-            umi = umi[7]
             if umi not in umi_set:
                 continue
             elif umi in umi_set:
@@ -140,9 +133,10 @@ with (open(in_file, "r") as in_file,
             
             #when i hit a new chromosome, wipe the set and reset chr_num variable to current chrom:
             if chrom != chr_num:
-                print(sam_line)
-                print(chrom)
-                print(chr_num)
+                print(unique_set)
+                # print(sam_line)
+                # print(chrom)
+                # print(chr_num)
                 dup_set = set()
                 chr_num = chrom 
                 unique_set.add(line_info)
