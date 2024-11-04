@@ -44,31 +44,103 @@ def get_5_start_pos(sam_line: str) -> int:
     rev_strand:bool = reverse_strand(sam_line)
     #if the read is on the + strand, just adjust for left soft clipping
     if rev_strand == False:
-        for char in cigar:
-            #if its soft clipping, add the clipping number to the start position 
-            if char == "S":
-                pos = pos + int(clip_num)
-            if char == "M":
-                pos = pos
-            #if the character is an integer, add the clip number to the char 
-            else: 
-                clip_num + char
+        cigar_hit = re.findall(r'(\d+)([A-Z]{1})', cigar)
+        # print(matches)
+        pos_adj = 0 
+        for i, hit in enumerate(cigar_hit):
+            #if the first index position of the cigar string is an S 
+            if i == 0 and hit[1] == "S":
+                #set position adjust = to the integer of soft clipping
+                pos_adj += int(hit[0])
+            #subtract the soft clipping from the given position to get the true 5' start position 
+            new_pos = pos - pos_adj
     # if the match is on the reverse strand 
     if rev_strand == True: 
         pos_adj = 0 
+        #create tuple holding the letter and corresponding number 
         cigar_hit = re.findall(r'(\d+)([A-Z]{1})', cigar)
         for hit in cigar_hit:
             #add match number to position adjust 
             if hit[1] == "M":
                 pos_adj += int(hit[0])
+            #add deletion number to  position adjust
             if hit[1] == "D":
                 pos_adj += int(hit[0])
+            # adjust for N for deletions 
+            if hit[1] == "N":
+                pos_adj += int(hit[0])
         for i, hit in enumerate(cigar_hit):
+            #if it's 3' clipping, skip
             if i == 0:
                 pass
+            #if it's 5' clipping, add to the position adjust 
             elif i != 0:
                 if hit[1] == "S":
                     pos_adj += int(hit[0])
-        pos = pos + pos_adj
-    return(pos)
+        #
+        new_pos = pos + pos_adj
+    return(new_pos)
+
+
+def get_line_info(sam_line: str) -> tuple:
+    '''This function will take in a sam file line and return a touple containing
+    [chrom, true 5' start position, strand, UMI]'''
+    line_info = ()
+    start_pos = get_5_start_pos(sam_line)
+    strand = reverse_strand(sam_line)
+    spline = sam_line.split()
+    UMI = spline[0].split(":")
+    UMI = UMI[7]
+    chrom = spline[2]
+    line_info = (chrom, start_pos, strand, UMI)
+
+#create set of UMIS: 
+umi_set = set()
+with open(umis) as fh1:
+    for umi in fh1:
+        umi = umi.strip()
+        umi_set.add(umi)
+
+### start flow that will loop by CHROMOSOME: 
+#initialize set that will hold unique reads: 
+unique_set = set()
+chr_num = 1
+with (open(in_file, "r") as in_file,
+      open(out_file, "w") as out_file):
+    
+    while True: 
+        sam_line = in_file.readline().strip()
+        if sam_line == "":
+            break 
+        spline = sam_line.split()
+        umi = spline[0].split(":")
+        umi = umi[7]
+
+        #write out all the header lines: 
+        if spline[0] == "@":
+            out_file.write(sam_line)
+        elif spline[0] != "@":
+            #check if UMI is known: 
+            if umi not in umi_set:
+                continue
+            elif umi in umi_set:
+                line_info = get_line_info(sam_line)
+                chrom = line_info[0]
+            
+            #when i hit a new chromosome, wipe the set and reset chr_num variable to current chrom:
+            if chrom != chr_num:
+                dup_set = set()
+                chr_num = chrom 
+            
+            #on the same chromosome check if the line info is unique and if so write out and save to set
+            elif chrom == chr_num:
+                if line_info not in unique_set:
+                    unique_set.add(line_info)
+                    out_file.write(sam_line)
+                elif line_info in unique_set:
+                    pass
+
+
+
+
 
