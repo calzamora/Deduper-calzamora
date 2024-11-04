@@ -105,7 +105,7 @@ with open(umis) as fh1:
 ### start flow that will loop by CHROMOSOME: 
 #initialize set that will hold unique reads: 
 unique_set = set()
-chr_num = 1
+chr_num = str("1")
 with (open(in_file, "r") as in_file,
       open(out_file, "w") as out_file):
     
@@ -145,6 +145,9 @@ with (open(in_file, "r") as in_file,
                 print(chr_num)
                 dup_set = set()
                 chr_num = chrom 
+                unique_set.add(line_info)
+                out_file.write(f"{sam_line}\n")
+
             
             #on the same chromosome check if the line info is unique and if so write out and save to set
             elif chrom == chr_num:
