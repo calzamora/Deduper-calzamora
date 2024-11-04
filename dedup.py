@@ -139,7 +139,7 @@ with (open(in_file, "r") as in_file,
                 chrom = line_info[0]
             
             #when i hit a new chromosome, wipe the set and reset chr_num variable to current chrom:
-            if int(chrom) != chr_num:
+            if chrom != chr_num:
                 print(sam_line)
                 print(chrom)
                 print(chr_num)
