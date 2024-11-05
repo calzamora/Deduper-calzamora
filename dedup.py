@@ -7,11 +7,12 @@ import argparse
 import re
 
 def get_args():
-    parser = argparse.ArgumentParser(description="deuper script")
+    parser = argparse.ArgumentParser(description="INPUT: dedup.py -f [sorted input sam file - no paired end] \
+                          -o [output sam file] -u [known UMI list] | OUTPUT: sorted sam file containing only biological duplicates")
     parser.add_argument("-f", help="sorted SAM input file ", type = str) #type: str
     parser.add_argument("-o", help="output SAM file name ", type = str) #type: str
     parser.add_argument("-u", help="list of known umis", type = str) #type: str
-    ###add -h help message 
+
 
     return parser.parse_args()
 
