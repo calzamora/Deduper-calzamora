@@ -1,0 +1,65 @@
+1   697508
+10   564902
+11   1220388
+12   359950
+13   467658
+14   387238
+15   437464
+16   360922
+17   517565
+18   290505
+19   571664
+2   2787017
+3   547614
+4   589838
+5   562159
+6   510817
+7   1113182
+8   576462
+9   627487
+MT   202001
+X   317852
+Y   2246
+JH584299.1   2
+GL456233.2   655
+GL456211.1   5
+GL456221.1   3
+GL456354.1   0
+GL456210.1   4
+GL456212.1   3
+JH584304.1   293
+GL456379.1   1
+GL456367.1   2
+GL456239.1   0
+GL456383.1   0
+MU069435.1   5449
+GL456389.1   0
+GL456370.1   20
+GL456390.1   0
+GL456382.1   0
+GL456396.1   16
+GL456368.1   2
+MU069434.1   2
+	Command being timed: "./dedup.py -f /projects/bgmp/calz/bioinfo/Bi624/Deduper-calzamora/sorted_cca.sam -u /projects/bgmp/calz/bioinfo/Bi624/Deduper-calzamora/STL96.txt -o rerun_dedup.sam"
+	User time (seconds): 104.33
+	System time (seconds): 5.40
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:50.41
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 3166748
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 664318
+	Voluntary context switches: 923
+	Involuntary context switches: 142
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

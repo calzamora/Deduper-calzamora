@@ -8,7 +8,7 @@ import re
 
 def get_args():
     parser = argparse.ArgumentParser(description="INPUT: dedup.py -f [sorted input sam file - no paired end] \
-                          -o [output sam file] -u [known UMI list] | OUTPUT: sorted sam file containing only biological duplicates")
+                          -o [output sam file] -u [known UMI list] | OUTPUT: sorted sam file containing only biological duplicates, statistics printed to standard out")
     parser.add_argument("-f", help="sorted SAM input file ", type = str) #type: str
     parser.add_argument("-o", help="output SAM file name ", type = str) #type: str
     parser.add_argument("-u", help="list of known umis", type = str) #type: str
@@ -107,26 +107,37 @@ with open(umis) as fh1:
 #initialize set that will hold unique reads: 
 unique_set = set()
 chr_num = str("1")
+pcr_dups_removed = 0 
+bio_dupes_kept = 0 
+unknown_umis = 0 
+
+total_pcr_dups_removed = 0 
+total_bio_dupes_kept = 0 
+total_unknown_umis = 0 
+
 with (open(in_file, "r") as in_file,
       open(out_file, "w") as out_file):
     
     while True: 
         sam_line = in_file.readline().strip()
         if sam_line == "":
+            # #at the end of the file print out total counts and end 
+            # print(f"Total PCR duplicates removed: {total_pcr_dups_removed}") 
+            # print(f"Total Biological duplicates written out: {total_bio_dupes_kept}")
+            # print(f"Total Unknown UMIs removed: {total_unknown_umis}")
             break 
         spline = sam_line.split()
 
         #write out all the header lines: 
         if len(spline[0]) == 3:
-            # print(spline[0])
             out_file.write(f"{sam_line}\n")
         elif len(spline[0]) != 3:
             #check if UMI is known: 
-            # print(spline[0])
             umi = spline[0].split(":")
             umi = umi[-1]
-            # print(umi)
             if umi not in umi_set:
+                #count the total and per chromosome unknown umis
+                unknown_umis += 1
                 continue
             elif umi in umi_set:
                 line_info = get_line_info(sam_line)
@@ -134,13 +145,20 @@ with (open(in_file, "r") as in_file,
             
             #when i hit a new chromosome, wipe the set and reset chr_num variable to current chrom:
             if chrom != chr_num:
-                print(unique_set)
-                # print(sam_line)
-                # print(chrom)
-                # print(chr_num)
+                #print out per chromosome stats and reset for next loop 
+                # print(f"Chromosome Numbeer {chr_num}: PCR duplicates removed: {pcr_dups_removed}") 
+                print(f"{chr_num}   {bio_dupes_kept}")
+                # print(f"Chromosome Numbeer {chr_num}: Unknown UMIs removed: {unknown_umis}")
+                total_pcr_dups_removed += pcr_dups_removed
+                total_bio_dupes_kept += bio_dupes_kept
+                total_unknown_umis += unknown_umis
+                pcr_dups_removed = 0 
+                bio_dupes_kept = 0 
+                unknown_umis = 0   
                 dup_set = set()
                 chr_num = chrom 
                 unique_set.add(line_info)
+                #write out the first read we see 
                 out_file.write(f"{sam_line}\n")
 
             
@@ -148,8 +166,13 @@ with (open(in_file, "r") as in_file,
             elif chrom == chr_num:
                 if line_info not in unique_set:
                     unique_set.add(line_info)
+                    #iterate counters 
+                    bio_dupes_kept += 1
+                    #write out sam line 
                     out_file.write(f"{sam_line}\n")
                 elif line_info in unique_set:
+                    #iterate counters 
+                    pcr_dups_removed += 1
                     pass
 
 
